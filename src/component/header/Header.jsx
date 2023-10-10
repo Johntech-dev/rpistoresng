@@ -1,13 +1,30 @@
-import {React, useState} from 'react'
+import {React, useEffect, useState} from 'react'
 import {AiOutlineClose, AiOutlineMenu} from 'react-icons/ai'
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { FaUserCircle } from 'react-icons/fa';
 
 function Header  () {
     const [nav, setNav] = useState(false)
-
+    const [displayName, setdisplayName] = useState("");
     const handleNav = () =>{
         setNav(!nav)
     }
+
+    useEffect(() => {
+      onAuthStateChanged(auth, (user) => {
+          if (user) {
+            const uid = user.uid;
+      console.log(user.displayName)
+      setdisplayName(user.displayName)
+          } else {
+          setdisplayName("")
+          }
+        });
+  }, [])
+    const auth = getAuth();
     const logo = (
       <div className=' w-28 h-28 md:mt-4 md:flex md:ml-8'>
         <Link to="/">
@@ -36,9 +53,23 @@ const mobilesearch = (
   <input className='border border-gray-400 rounded-md w-96 p-2 outline-none' type='text' placeholder='Search products, brands and categories' />
   <button className='border bg-blue-500 p-2 text-white  ml-2 rounded-md' type='button'>Search</button>
   </div>
-)
+) 
+const navigate = useNavigate()
+const Logoutuser = (e) => {
+  e.preventDefault();
+  signOut(auth).then(() => {
+    toast.success("Signout Successfully")
+    navigate("/login")
+  })
+  // }).catch((error) => {
+  //   toast.error("An error Occured")
+  // });
+  
+}
+
   return (
     <>
+    <ToastContainer />
     {/* mobile view */}
     <div className=' select-none flex justify-between items-center h-16 first-letter font-outfit text-[#18102b]'>
      {logo}
@@ -52,7 +83,16 @@ const mobilesearch = (
       </div>
       </div>
       <div className='hidden md:flex gap-4 mr-5 md:mt-10'>
-     <><Link className='hover:text-blue-500' to="/login">Login</Link><Link className='hover:text-blue-500' to="/register">Register</Link><Link className='hover:text-blue-500' to="/orderhistory">Order</Link></>
+     <>
+     <Link className='hover:text-blue-500' to="/login">Login</Link>
+     <a className='flex flex-row items-center' href='#'>
+      <FaUserCircle size={16} />
+      Hi, {displayName}
+     </a>
+      <Link className='hover:text-blue-500' to="/register">Register</Link>
+      <Link className='hover:text-blue-500' to="/orderhistory">Order</Link>
+      <Link className='hover:text-blue-500' to="/Logout" onClick={Logoutuser}>Logout</Link>
+      </>
      {cart}
       </div>
         </div> 
@@ -68,6 +108,7 @@ const mobilesearch = (
           <li className='p-4'><Link className= 'hover:text-blue-500 ease-in-out' to="/login">Login</Link></li>
           <li className='p-4'><Link className='hover:text-blue-500 ease-in-out' to="/register">Register</Link></li>
           <li className='p-4'><Link className='hover:text-blue-500 ease-in-out' to="/orderhistory">Order</Link></li>
+          <li className='p-4'><Link className='hover:text-blue-500 ease-in-out' to="/Logout" onClick={Logoutuser}></Link></li>
       </ul>
       </div>
     </>
