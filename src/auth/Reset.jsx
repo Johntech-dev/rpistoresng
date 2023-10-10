@@ -22,7 +22,7 @@ function Reset() {
     <ToastContainer />
     <div className='flex flex-col md:flex-row gap-8 md:gap-28 justify-center items-center md:mr-28'>
         <div>
-            <img className='w-[500px] mt-16' src='rpiregister.png' />
+            <img className='w-[500px] mt-16' src='rpireset.png' />
         </div>
         <div>
             <div>
